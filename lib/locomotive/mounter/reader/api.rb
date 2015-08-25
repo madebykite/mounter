@@ -22,6 +22,15 @@ module Locomotive
           # Call the LocomotiveCMS engine to get a token for
           # the next API calls
           def prepare
+            ssl_options = self.parameters.select { |k, _| %w(client_pem_file client_pem_password ssl_ca_file).include?(k.to_s) }
+            if ssl_options[:client_pem_file]
+              begin
+                Locomotive::Mounter::EngineApi.set_client_certificate(ssl_options)
+              rescue Exception => e
+                raise Locomotive::Mounter::ReaderException.new("unable to set client certificate: #{e.message}")
+              end
+            end
+
             credentials = self.parameters.select { |k, _| %w(uri email password api_key).include?(k.to_s) }
             self.uri    = credentials[:uri]
 

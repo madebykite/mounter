@@ -36,6 +36,15 @@ module Locomotive
         end
       end
 
+      # Configures a client certificate, if the option is set
+      #
+      # @param [ Hash ] *args A hash with the values: client_pem_file, client_pem_password or ssl_ca_file
+      #
+      def self.set_client_certificate(options)
+        self.pem File.read(options[:client_pem_file]), options[:client_pem_password]
+        self.ssl_ca_file options[:ssl_ca_file]
+      end
+
       # Read a resource or a list of resources from the API
       # Raise an exception if something went wrong.
       #
