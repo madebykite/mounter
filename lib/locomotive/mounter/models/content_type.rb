@@ -91,6 +91,8 @@ module Locomotive
             entry.send :set_slug
 
             (self.entries ||= []) << entry
+            (@entries_by_permalink ||= {})[entry._permalink] = entry
+            (@entries_by_label ||= {})[entry._label] = entry
           end
         end
 
@@ -137,7 +139,7 @@ module Locomotive
         # @return [ Object ] The content entry if it exists or nil
         #
         def find_entry(id)
-          (self.entries || []).detect { |entry| [entry._permalink, entry._label].include?(id) }
+          (@entries_by_permalink || {})[id] || (@entries_by_label || {})[id]
         end
 
         # Find all the entries whose their _permalink or _label is among the ids
@@ -148,7 +150,7 @@ module Locomotive
         # @return [ Array ] List of content entries or [] if none
         #
         def find_entries_among(ids)
-          (self.entries || []).find_all { |entry| [*ids].any? { |v| [entry._permalink, entry._label].include?(v) } }
+          ids.collect { |id| find_entry(id) }.compact
         end
 
         # Find all the entries by a field and its value.
