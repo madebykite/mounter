@@ -25,12 +25,19 @@ module Locomotive
             # by default, do not push data (content entries and editable elements)
             self.parameters[:data] ||= false
 
+            ssl_options = self.parameters.select { |k, _| %w(client_pem_file client_pem_password ssl_ca_file).include?(k.to_s) }
+            if ssl_options[:client_pem_file]
+              begin
+                Locomotive::Mounter::EngineApi.set_client_certificate(ssl_options)
+              rescue Exception => e
+                raise Locomotive::Mounter::ReaderException.new("unable to set client certificate: #{e.message}")
+              end
+            end
+
             credentials = self.parameters.select { |k, _| %w(uri email password api_key).include?(k.to_s) }
-            ssl_version = self.parameters[:ssl_version] ? self.parameters[:ssl_version].to_sym : :TLSv1_2
             self.uri    = credentials[:uri]
 
             begin
-              Locomotive::Mounter::EngineApi.ssl_version(ssl_version)
               Locomotive::Mounter::EngineApi.set_token(credentials)
             rescue Exception => e
               raise Locomotive::Mounter::WriterException.new("unable to get an API token: #{e.message}")
