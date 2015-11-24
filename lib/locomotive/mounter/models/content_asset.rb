@@ -34,7 +34,7 @@ module Locomotive
           return @raw if @raw
 
           if self.uri
-            @raw = HTTParty.get(self.uri.to_s).body
+            @raw = Locomotive::Mounter::EngineApi.get(self.uri.to_s).body
           else
             @raw = File.read(self.filepath)
           end
