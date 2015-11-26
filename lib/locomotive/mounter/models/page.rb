@@ -313,7 +313,7 @@ module Locomotive
         #
         def raw_template=(content)
           @source ||= {}
-          @source[Locomotive::Mounter.locale] = content
+          @source[Locomotive::Mounter.locale] = content.gsub("\r\n", "\n").strip + "\n"
         end
 
         # Return the Liquid template based on the raw_template property
