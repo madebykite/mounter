@@ -28,7 +28,7 @@ module Locomotive
             self.template
           end
 
-          @source[Locomotive::Mounter.locale] = source
+          @source[Locomotive::Mounter.locale] = source.gsub("\r\n", "\n").rstrip + "\n"
         end
 
         # Return the params used for the API.
